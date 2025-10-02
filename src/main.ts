@@ -9,10 +9,12 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   
   // Enable CORS
+  const corsOrigin = configService.get('CORS_ORIGIN');
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN'),
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    origin: corsOrigin,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
 
   // Enable validation pipes
@@ -22,9 +24,15 @@ async function bootstrap() {
     transform: true,
   }));
 
-  const port = configService.get('PORT') || 3001;
-  await app.listen(port);
+  const port = configService.get('PORT') || 3345;
+  const host = configService.get('HOST') || 'localhost';
+  const appUrl = configService.get('APP_URL') || `http://${host}:${port}`;
   
-  console.log(`🚀 Backend running on http://localhost:${port}`);
+  await app.listen(port, host);
+  
+  console.log(`🚀 Backend running on ${appUrl}`);
+  console.log(`📡 Host: ${host}`);
+  console.log(`🔌 Port: ${port}`);
+  console.log(`🌐 CORS Origin: ${configService.get('CORS_ORIGIN')}`);
 }
 bootstrap();
