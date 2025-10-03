@@ -7,7 +7,7 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     // Criar tabela companies
     await queryRunner.query(`
       CREATE TABLE "companies" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL,
         "name" character varying(200) NOT NULL,
         "domain" character varying(100) NOT NULL,
         "email" character varying(200) NOT NULL,
@@ -22,7 +22,7 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     // Criar tabela users
     await queryRunner.query(`
       CREATE TABLE "users" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL,
         "username" character varying(100) NOT NULL,
         "password" character varying(255) NOT NULL,
         "firstName" character varying(100) NOT NULL,
@@ -42,7 +42,7 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     // Criar tabela approvers
     await queryRunner.query(`
       CREATE TABLE "approvers" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL,
         "firstName" character varying(100) NOT NULL,
         "lastName" character varying(100) NOT NULL,
         "fullName" character varying(200) NOT NULL,
@@ -57,7 +57,7 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     // Criar tabela cards
     await queryRunner.query(`
       CREATE TABLE "cards" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL,
         "title" character varying(255) NOT NULL,
         "gmudLink" text NOT NULL,
         "executor" character varying(100) NOT NULL,
