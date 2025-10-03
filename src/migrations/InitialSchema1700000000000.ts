@@ -4,40 +4,62 @@ export class InitialSchema1700000000000 implements MigrationInterface {
   name = 'InitialSchema1700000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Criar tabela companies
-    await queryRunner.query(`
-      CREATE TABLE "companies" (
-        "id" uuid NOT NULL,
-        "name" character varying(200) NOT NULL,
-        "domain" character varying(100) NOT NULL,
-        "email" character varying(200) NOT NULL,
-        "isActive" boolean NOT NULL DEFAULT true,
-        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-        CONSTRAINT "UQ_companies_domain" UNIQUE ("domain"),
-        CONSTRAINT "PK_companies" PRIMARY KEY ("id")
+    // Verificar se a tabela companies já existe
+    const companiesExists = await queryRunner.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'companies'
       )
     `);
 
-    // Criar tabela users
-    await queryRunner.query(`
-      CREATE TABLE "users" (
-        "id" uuid NOT NULL,
-        "username" character varying(100) NOT NULL,
-        "password" character varying(255) NOT NULL,
-        "firstName" character varying(100) NOT NULL,
-        "lastName" character varying(100) NOT NULL,
-        "email" character varying(200) NOT NULL,
-        "isActive" boolean NOT NULL DEFAULT true,
-        "userType" character varying NOT NULL DEFAULT 'simple',
-        "companyId" uuid,
-        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-        CONSTRAINT "UQ_users_username" UNIQUE ("username"),
-        CONSTRAINT "CHK_users_userType" CHECK ("userType" IN ('admin', 'simple')),
-        CONSTRAINT "PK_users" PRIMARY KEY ("id")
+    if (!companiesExists[0].exists) {
+      // Criar tabela companies
+      await queryRunner.query(`
+        CREATE TABLE "companies" (
+          "id" uuid NOT NULL,
+          "name" character varying(200) NOT NULL,
+          "domain" character varying(100) NOT NULL,
+          "email" character varying(200) NOT NULL,
+          "isActive" boolean NOT NULL DEFAULT true,
+          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+          CONSTRAINT "UQ_companies_domain" UNIQUE ("domain"),
+          CONSTRAINT "PK_companies" PRIMARY KEY ("id")
+        )
+      `);
+    }
+
+    // Verificar se a tabela users já existe
+    const usersExists = await queryRunner.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
       )
     `);
+
+    if (!usersExists[0].exists) {
+      // Criar tabela users
+      await queryRunner.query(`
+        CREATE TABLE "users" (
+          "id" uuid NOT NULL,
+          "username" character varying(100) NOT NULL,
+          "password" character varying(255) NOT NULL,
+          "firstName" character varying(100) NOT NULL,
+          "lastName" character varying(100) NOT NULL,
+          "email" character varying(200) NOT NULL,
+          "isActive" boolean NOT NULL DEFAULT true,
+          "userType" character varying NOT NULL DEFAULT 'simple',
+          "companyId" uuid,
+          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+          CONSTRAINT "UQ_users_username" UNIQUE ("username"),
+          CONSTRAINT "CHK_users_userType" CHECK ("userType" IN ('admin', 'simple')),
+          CONSTRAINT "PK_users" PRIMARY KEY ("id")
+        )
+      `);
+    }
 
     // Criar tabela approvers
     await queryRunner.query(`
